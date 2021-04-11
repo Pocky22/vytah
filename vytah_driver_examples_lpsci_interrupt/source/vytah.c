@@ -4,9 +4,7 @@
 
 #include "clock_config.h"
 #include "pin_mux.h"
-/*******************************************************************************
- * Definitions
- ******************************************************************************/
+
 #define DEMO_LPSCI UART0
 #define DEMO_LPSCI_CLKSRC kCLOCK_CoreSysClk
 #define DEMO_LPSCI_CLK_FREQ CLOCK_GetFreq(kCLOCK_CoreSysClk)
@@ -19,69 +17,18 @@
 #define LNP3 0xE3
 #define LNP4 0xE4
 
-#define UP 0x01
-#define DOWN 0x02
+#define HORE 0x01
+#define DOLE 0x02
 #define ON 0x01
 #define OFF 0x00
 
-
-/*! @brief Ring buffer size (Unit: Byte). */
-#define DEMO_RING_BUFFER_SIZE 16
-
-/*! @brief Ring buffer to save received data. */
-
-/*******************************************************************************
- * Prototypes
- ******************************************************************************/
-
-/*******************************************************************************
- * Variables
- ******************************************************************************/
-
-uint8_t g_tipString[] =
-    "LPSCI functional API interrupt example\r\nBoard receives characters then sends them out\r\nNow please input:\r\n";
-_Bool zatvoreneDvere, readed;
+_Bool zatvoreneDvere;
 uint8_t packet[20], index = 0;
-uint8_t data, startovaciBajt, adr1, sprava, dataSize, crc;
+uint8_t data, startovaciBajt, addr, sprava, dataSize, crc;
 uint8_t LimitSwitch = 0;
 uint8_t poslednaPozicia = 0;
 uint8_t poschodie = 0;
 uint8_t aktualnePoschodie = 0;
-
-
-/*
-  Ring buffer for data input and output, in this example, input data are saved
-  to ring buffer in IRQ handler. The main function polls the ring buffer status,
-  if there are new data, then send them out.
-  Ring buffer full: (((rxIndex + 1) % DEMO_RING_BUFFER_SIZE) == txIndex)
-  Ring buffer empty: (rxIndex == txIndex)
-*/
-uint8_t demoRingBuffer[DEMO_RING_BUFFER_SIZE];
-volatile uint16_t txIndex; /* Index of the data to send out. */
-volatile uint16_t rxIndex; /* Index of the memory to save new arrived data. */
-
-/*******************************************************************************
- * Code
- ******************************************************************************/
-
-void DEMO_LPSCI_IRQHandler(void)
-{
-    uint8_t data;
-
-    /* If new data arrived. */
-    if ((kLPSCI_RxDataRegFullFlag)&LPSCI_GetStatusFlags(DEMO_LPSCI))
-    {
-        data = LPSCI_ReadByte(DEMO_LPSCI);
-
-        /* If ring buffer is not full, add data to ring buffer. */
-        if (((rxIndex + 1) % DEMO_RING_BUFFER_SIZE) != txIndex)
-        {
-            demoRingBuffer[rxIndex] = data;
-            rxIndex++;
-            rxIndex %= DEMO_RING_BUFFER_SIZE;
-        }
-    }
-}
 
 // https://stackoverflow.com/questions/29214301/ios-how-to-calculate-crc-8-dallas-maxim-of-nsdata
 
@@ -107,9 +54,9 @@ void citajSpravu(void) {
 
 	while(true) {
 		LPSCI_ReadBlocking(DEMO_LPSCI, &data, 1);
-		adr1 = data;
+		addr = data;
 
-		if(!(adr1 != 0x00)) break;
+		if(addr == 0x00) break;
 	}
 	LPSCI_ReadBlocking(DEMO_LPSCI, &data, 1);
 	sprava = data;
@@ -127,12 +74,10 @@ void citajSpravu(void) {
 	if (startovaciBajt == 0xA0) {
 		posliACK();
 	}
-
 }
 
 void spracujSpravu(void) {
 	citajSpravu();
-
 		if (sprava == 0xC0 || sprava == 0xB0) {
 			if(sprava == 0xC0) {
 				LED(0x10,ON);
@@ -171,11 +116,13 @@ void spracujSpravu(void) {
 		}
 		if(poslednaPozicia < poschodie) {
 			zatvorDvere();
+			zobrazPoziciu(HORE);
 			delay(100);
 			pohybHore();
 
 			while(LimitSwitch != poschodie) {
 				citajSpravu();
+				zobrazPoziciu(HORE);
 			}
 			delay(10);
 			zastav();
@@ -183,15 +130,18 @@ void spracujSpravu(void) {
 			citajSpravu();
 			delay(100);
 			otvorDvere();
+			zobrazPoziciu(OFF);
 			poslednaPozicia = LimitSwitch;
 
 		} else if(poslednaPozicia > poschodie){
 			zatvorDvere();
+			zobrazPoziciu(DOLE);
 			delay(100);
 			pohybDole();
 
 			while(LimitSwitch != poschodie) {
 				citajSpravu();
+				zobrazPoziciu(DOLE);
 			}
 			delay(10);
 			zastav();
@@ -199,15 +149,14 @@ void spracujSpravu(void) {
 			citajSpravu();
 			delay(100);
 			otvorDvere();
+			zobrazPoziciu(OFF);
 			poslednaPozicia = LimitSwitch;
 		}
-
 }
 
 //https://cboard.cprogramming.com/c-programming/179195-random-time-delay.html
 
-void delay(int milli_seconds)
-{
+void delay(int milli_seconds) {
     /// Storing start time
     clock_t start_time = clock();
 
@@ -216,9 +165,9 @@ void delay(int milli_seconds)
 }
 
 void posliACK(void) {
-	uint8_t crcData[3] = {adr1, sprava, 0x00};
+	uint8_t crcData[3] = {addr, sprava, 0x00};
 	uint8_t newCrc = dallas_crc8(crcData, 3);
-	uint8_t msg[] = {0xA1, sprava, adr1, 0x00, newCrc};
+	uint8_t msg[] = {0xA1, sprava, addr, 0x00, newCrc};
 	LPSCI_WriteBlocking(DEMO_LPSCI, msg, sizeof(msg));
 }
 
@@ -259,6 +208,7 @@ void zastav(void) {
 
 void pociatok(void) {
 	zatvorDvere();
+	zobrazPoziciu(DOLE);
 	zatvoreneDvere = true;
 	delay(100);
 	if(zatvoreneDvere = true) {
@@ -266,13 +216,14 @@ void pociatok(void) {
 	    citajSpravu();
 	    while(LimitSwitch != 0xe0) {
 	    		citajSpravu();
-
+	    		zobrazPoziciu(DOLE);
 	    }
 	    delay(10);
 	    zastav();
 	    citajSpravu();
 	    delay(100);
 	    otvorDvere();
+	    zobrazPoziciu(OFF);
 	    poslednaPozicia = LP0;
 	    zatvoreneDvere = false;
 	    return;
@@ -299,11 +250,32 @@ void LEDoff(void) {
 	LED(0x23,OFF);
 	LED(0x24,OFF);
 }
-/*!
- * @brief Main function
- */
-int main(void)
-{
+
+void zobrazPoziciu(uint8_t smer) {
+	switch (sprava) {
+		case 0xE0:
+			aktualnePoschodie = 0x50;
+			break;
+		case 0xE1:
+			aktualnePoschodie = 0x31;
+			break;
+		case 0xE2:
+			aktualnePoschodie = 0x32;
+			break;
+		case 0xE3:
+			aktualnePoschodie = 0x33;
+			break;
+		case 0xE4:
+			aktualnePoschodie = 0x34;
+			break;
+	}
+	uint8_t crcData[] = {0x30, 0x00, smer, aktualnePoschodie};
+	uint8_t msg[] = {0xA0, 0x30, 0x00, 0x02, smer, aktualnePoschodie, dallas_crc8(crcData, sizeof(crcData))};
+	LPSCI_WriteBlocking(DEMO_LPSCI, msg, sizeof(msg));
+	citajSpravu();
+}
+
+int main(void) {
 	lpsci_config_t config;
 
 	int pom = 1;
