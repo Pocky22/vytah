@@ -124,26 +124,44 @@ void citajSpravu(void) {
 void spracujSpravu(void) {
 	citajSpravu();
 
-		if (sprava == 0xC0) {
+		if (sprava == 0xC0 || sprava == 0xB0) {
 			poschodie = LP0;
-		} else if(sprava == 0xC1) {
+		} else if(sprava == 0xC1 || sprava == 0xB1) {
 			poschodie = LNP1;
-		} else if(sprava == 0xC2) {
+		} else if(sprava == 0xC2 || sprava == 0xB2) {
 			poschodie = LNP2;
-		} else if(sprava == 0xC3) {
+		} else if(sprava == 0xC3 || sprava == 0xB3) {
 			poschodie = LNP3;
-		} else {
+		} else if(sprava == 0xc4 || sprava == 0xB4) {
 			poschodie = LNP4;
 		}
 		if(poslednaPozicia < poschodie) {
 			zatvorDvere();
 			delay(100);
 			pohybHore();
+			while(LimitSwitch != poschodie) {
+				citajSpravu();
+			}
+			delay(10);
+			zastav();
+			citajSpravu();
+			delay(100);
+			otvorDvere();
+			poslednaPozicia = LimitSwitch;
 
 		} else if(poslednaPozicia > poschodie){
 			zatvorDvere();
 			delay(100);
 			pohybDole();
+			while(LimitSwitch != poschodie) {
+				citajSpravu();
+			}
+			delay(10);
+			zastav();
+			citajSpravu();
+			delay(100);
+			otvorDvere();
+			poslednaPozicia = LimitSwitch;
 		}
 
 }
