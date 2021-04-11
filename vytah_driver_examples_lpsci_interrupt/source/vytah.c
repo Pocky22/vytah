@@ -18,6 +18,13 @@
 #define LNP2 0xE2
 #define LNP3 0xE3
 #define LNP4 0xE4
+
+#define UP 0x01
+#define DOWN 0x02
+#define ON 0x01
+#define OFF 0x00
+
+
 /*! @brief Ring buffer size (Unit: Byte). */
 #define DEMO_RING_BUFFER_SIZE 16
 
@@ -39,6 +46,8 @@ uint8_t data, startovaciBajt, adr1, sprava, dataSize, crc;
 uint8_t LimitSwitch = 0;
 uint8_t poslednaPozicia = 0;
 uint8_t poschodie = 0;
+uint8_t aktualnePoschodie = 0;
+
 
 /*
   Ring buffer for data input and output, in this example, input data are saved
@@ -125,25 +134,52 @@ void spracujSpravu(void) {
 	citajSpravu();
 
 		if (sprava == 0xC0 || sprava == 0xB0) {
+			if(sprava == 0xC0) {
+				LED(0x10,ON);
+			} else {
+				LED(0x20,ON);
+			}
 			poschodie = LP0;
 		} else if(sprava == 0xC1 || sprava == 0xB1) {
+			if(sprava == 0xC1) {
+				LED(0x11,ON);
+			} else {
+				LED(0x21,ON);
+			}
 			poschodie = LNP1;
 		} else if(sprava == 0xC2 || sprava == 0xB2) {
+			if(sprava == 0xC2) {
+				LED(0x12,ON);
+			} else {
+				LED(0x22,ON);
+			}
 			poschodie = LNP2;
 		} else if(sprava == 0xC3 || sprava == 0xB3) {
+			if(sprava == 0xC3) {
+				LED(0x13,ON);
+			} else {
+				LED(0x23,ON);
+			}
 			poschodie = LNP3;
 		} else if(sprava == 0xc4 || sprava == 0xB4) {
+			if(sprava == 0xC4) {
+				LED(0x14,ON);
+			} else {
+				LED(0x24,ON);
+			}
 			poschodie = LNP4;
 		}
 		if(poslednaPozicia < poschodie) {
 			zatvorDvere();
 			delay(100);
 			pohybHore();
+
 			while(LimitSwitch != poschodie) {
 				citajSpravu();
 			}
 			delay(10);
 			zastav();
+			LEDoff();
 			citajSpravu();
 			delay(100);
 			otvorDvere();
@@ -153,11 +189,13 @@ void spracujSpravu(void) {
 			zatvorDvere();
 			delay(100);
 			pohybDole();
+
 			while(LimitSwitch != poschodie) {
 				citajSpravu();
 			}
 			delay(10);
 			zastav();
+			LEDoff();
 			citajSpravu();
 			delay(100);
 			otvorDvere();
@@ -239,6 +277,27 @@ void pociatok(void) {
 	    zatvoreneDvere = false;
 	    return;
 	}
+}
+
+void LED(uint8_t led, uint8_t zapnutVypnut) {
+	uint8_t crcData[] = {led, 0x00, zapnutVypnut};
+	uint8_t msg[] = {0xA0, led, 0x00, 0x01, zapnutVypnut, dallas_crc8(crcData, sizeof(crcData))};
+	LPSCI_WriteBlocking(DEMO_LPSCI, msg, sizeof(msg));
+	citajSpravu();
+}
+
+void LEDoff(void) {
+	LED(0x10,OFF);
+	LED(0x11,OFF);
+	LED(0x12,OFF);
+	LED(0x13,OFF);
+	LED(0x14,OFF);
+
+	LED(0x20,OFF);
+	LED(0x21,OFF);
+	LED(0x22,OFF);
+	LED(0x23,OFF);
+	LED(0x24,OFF);
 }
 /*!
  * @brief Main function
