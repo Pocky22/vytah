@@ -38,6 +38,7 @@ uint8_t packet[20], index = 0;
 uint8_t data, startovaciBajt, adr1, sprava, dataSize, crc;
 uint8_t LimitSwitch = 0;
 uint8_t poslednaPozicia = 0;
+uint8_t poschodie = 0;
 
 /*
   Ring buffer for data input and output, in this example, input data are saved
@@ -122,45 +123,29 @@ void citajSpravu(void) {
 
 void spracujSpravu(void) {
 	citajSpravu();
-	if(sprava == 0xC1) {
-		if(LimitSwitch < LNP1) {
-			zatvorDvere();
-			delay(100);
-			pohybHore();
-			citajSpravu();
-			while(LimitSwitch != LNP1) {
-				citajSpravu();
-			}
-			delay(10);
-			zastav();
-			citajSpravu();
-			delay(100);
-			otvorDvere();
-			poslednaPozicia = LNP1;
-			zatvoreneDvere = false;
-			citajSpravu();
-		}
-	}
 
-	if(sprava == 0xC2) {
-		if(LimitSwitch < LNP2) {
+		if (sprava == 0xC0) {
+			poschodie = LP0;
+		} else if(sprava == 0xC1) {
+			poschodie = LNP1;
+		} else if(sprava == 0xC2) {
+			poschodie = LNP2;
+		} else if(sprava == 0xC3) {
+			poschodie = LNP3;
+		} else {
+			poschodie = LNP4;
+		}
+		if(poslednaPozicia < poschodie) {
 			zatvorDvere();
 			delay(100);
 			pohybHore();
-			citajSpravu();
-			while(LimitSwitch != LNP2) {
-				citajSpravu();
-			}
-			delay(10);
-			zastav();
-			citajSpravu();
+
+		} else if(poslednaPozicia > poschodie){
+			zatvorDvere();
 			delay(100);
-			otvorDvere();
-			poslednaPozicia = LNP2;
-			zatvoreneDvere = false;
-			citajSpravu();
+			pohybDole();
 		}
-	}
+
 }
 
 //https://cboard.cprogramming.com/c-programming/179195-random-time-delay.html
