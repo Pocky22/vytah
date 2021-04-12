@@ -1,35 +1,7 @@
 
-#include "board.h"
-#include "fsl_lpsci.h"
-
 #include "clock_config.h"
-#include "pin_mux.h"
-
-#define DEMO_LPSCI UART0
-#define DEMO_LPSCI_CLKSRC kCLOCK_CoreSysClk
-#define DEMO_LPSCI_CLK_FREQ CLOCK_GetFreq(kCLOCK_CoreSysClk)
-#define DEMO_LPSCI_IRQn UART0_IRQn
-#define DEMO_LPSCI_IRQHandler UART0_IRQHandler
-
-#define LP0 0xE0
-#define LNP1 0xE1
-#define LNP2 0xE2
-#define LNP3 0xE3
-#define LNP4 0xE4
-
-#define HORE 0x01
-#define DOLE 0x02
-#define ON 0x01
-#define OFF 0x00
-
-_Bool zatvoreneDvere;
-uint8_t packet[30], index = 0;
-uint8_t data, startovaciBajt, addr, sprava, dataSize, crc;
-uint8_t LimitSwitch = 0;
-uint8_t poslednaPozicia = 0;
-uint8_t poschodie = 0;
-uint8_t aktualnePoschodie = 0;
-
+#include "library.h"
+#include "premenne.h"
 
 // https://stackoverflow.com/questions/29214301/ios-how-to-calculate-crc-8-dallas-maxim-of-nsdata
 
