@@ -5,10 +5,18 @@
  *      Author: PC1
  */
 
+/**
+* @file crc.c
+* @brief CRC8 kod
+* @details funkcia pre výpočet CRC8
+*
+*/
+
 #include "crc.h"
 #include "library.h"
-
-// https://stackoverflow.com/questions/29214301/ios-how-to-calculate-crc-8-dallas-maxim-of-nsdata
+/*!
+* zdroj: https://stackoverflow.com/questions/29214301/ios-how-to-calculate-crc-8-dallas-maxim-of-nsdata
+*/
 
 unsigned char dallas_crc8(const unsigned char * data, const unsigned int size) {
     unsigned char crc = 0;
