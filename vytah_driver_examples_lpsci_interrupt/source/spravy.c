@@ -140,5 +140,11 @@ void spracujSpravu(void) {
 			otvorDvere();
 			zobrazPoziciu(OFF);
 			poslednaPozicia = LimitSwitch;
+		} else if (poslednaPozicia == poschodie) {
+			zatvorDvere();
+			delay(50);
+			LEDoff();
+			otvorDvere();
+			poslednaPozicia = LimitSwitch;
 		}
 }
