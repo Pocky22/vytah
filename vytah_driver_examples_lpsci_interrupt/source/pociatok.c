@@ -5,9 +5,22 @@
  *      Author: PC1
  */
 
+/**
+* @file pociatok.c
+* @brief uvodna funkcia
+* @details funkcia, ktora sa vykona automaticky po inicializacii
+*
+*/
+
 #include "pociatok.h"
 #include "library.h"
 #include "premenne.h"
+
+/*!
+* funkcia, ktora ma za ulohu priviest vytah na pociatocnu poziciu, ktorou je poschodie P. Vytah pustime smerom dole a
+* za pomoci limit switchov rozpozname kde sa vytah akutalne nachadza a zastavime ho na poschodi P. Nasledne sa otvoria
+* dvere a cakame na privolanie vytahu z urciteho poschodia.
+*/
 
 void pociatok(void) {
 	terminalUVOD();

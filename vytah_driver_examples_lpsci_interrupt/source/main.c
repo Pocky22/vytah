@@ -1,3 +1,12 @@
+
+/**
+* @file main.c
+* @brief hlavna funckia
+* @details v maine prebehne zakladna inicializcia, vykona sa pociatocna funkcia a nasledne uz prebieha spracovavanie
+* sprav a vykonavanie prikazov v nekonecnom cykle
+*
+*/
+
 #include "library.h"
 #include "delay.h"
 #include "dvere.h"

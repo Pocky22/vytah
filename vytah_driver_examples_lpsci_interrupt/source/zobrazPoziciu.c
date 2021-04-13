@@ -5,6 +5,13 @@
  *      Author: PC1
  */
 
+/**
+* @file zobrazPoziciu.c
+* @brief funkcia pre zobrazovanie inforamcii na displej
+* @details funkcia, ktora zobrazuje na displej poschodie kde sa vytah nachadza a smer, ktorym sa pohybuje
+*
+*/
+
 #include "zobrazPoziciu.h"
 #include "library.h"
 #include "premenne.h"

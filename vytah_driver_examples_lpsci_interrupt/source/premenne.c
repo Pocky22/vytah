@@ -5,6 +5,12 @@
  *      Author: PC1
  */
 
+/**
+* @file premenne.c
+* @brief globalne premenne programu
+*
+*/
+
 #include "premenne.h"
 #include "library.h"
 

@@ -5,6 +5,13 @@
  *      Author: PC1
  */
 
+/**
+* @file ledky.c
+* @brief funkcie pre ledky
+* @details nasledujuce funkcie riesia zapnutie a vypnutie LED diod
+*
+*/
+
 #include "ledky.h"
 #include "library.h"
 

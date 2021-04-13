@@ -5,6 +5,13 @@
  *      Author: PC1
  */
 
+/**
+* @file ack.c
+* @brief ack
+* @details funkcia, ktora posiela acknowledgement
+*
+*/
+
 #include "ack.h"
 #include "library.h"
 #include "premenne.h"

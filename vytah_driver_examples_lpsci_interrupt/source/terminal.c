@@ -5,6 +5,13 @@
  *      Author: PC1
  */
 
+/**
+* @file terminal.c
+* @brief zobrazovanie informacnych udajov
+* @details nasledujuce funkcie maju za ulohu informovat pomocou terminalu o smere pohybu, ktory vykonava vytah a zobrazovat ake poschodie bolo stlacene
+*
+*/
+
 #include "terminal.h"
 #include "library.h"
 

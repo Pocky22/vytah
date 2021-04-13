@@ -5,9 +5,19 @@
  *      Author: PC1
  */
 
+/**
+* @file spravy.c
+* @brief citanie a spracovanie sprav
+*
+*/
+
 #include "spravy.h"
 #include "library.h"
 #include "premenne.h"
+
+/*!
+* funkcia citajSpravu sluzi na citanie sprav. Danu spravu cita po bajtoch, kazdy bajt si nasledne ulozi do zodpovedajucej premennej a na konci posle ACK.
+*/
 
 void citajSpravu(void) {
 	LPSCI_ReadBlocking(DEMO_LPSCI, &data, 1);
@@ -36,6 +46,10 @@ void citajSpravu(void) {
 		posliACK();
 	}
 }
+
+/*!
+* funkcia spracujSpravu sluzi na spracovanie prijatej spravy a urcenie co sa ma dalej s vytahom vykonat.
+*/
 
 void spracujSpravu(void) {
 	citajSpravu();

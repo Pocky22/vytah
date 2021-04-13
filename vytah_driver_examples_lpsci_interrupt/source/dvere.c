@@ -5,6 +5,13 @@
  *      Author: PC1
  */
 
+/**
+* @file dvere.c
+* @brief funkcie na otvaranie a zatvaranie dveri
+* @details nasledujuce funkcie riesia otvaranie a zatvaranie dveri vytahu
+*
+*/
+
 #include "dvere.h"
 #include "library.h"
 

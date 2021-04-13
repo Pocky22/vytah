@@ -5,6 +5,14 @@
  *      Author: PC1
  */
 
+
+/**
+* @file motor.c
+* @brief funkcie pre ovladanie pohybu vytahu
+* @details nasledujuce funkcie riadia ovladanie pohybu vytahu ako pohyb hore, dole a zastavenie vytahu
+*
+*/
+
 #include "motor.h"
 #include "library.h"
 
